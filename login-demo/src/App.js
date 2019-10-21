@@ -1,26 +1,39 @@
 import React from 'react';
-import logo from './logo.svg';
+import { connect } from 'react-redux';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+
+import { REQUEST_READY } from './reducers/loginReducer';
+
+import Home from './containers/Home';
+import Login from './containers/Login';
+
 import './App.css';
 
-function App() {
+function App({ loadingStatus }) {
+  const isLogined = loadingStatus === REQUEST_READY;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Switch>
+          {/* home */}
+          <Route exact path="/">
+            {isLogined ? <Home /> : <Redirect to='/login' />}
+          </Route>
+
+          {/* login route */}
+          <Route
+            exact
+            path="/login"
+          >
+            {isLogined ? <Redirect to='/' /> : <Login /> }
+          </Route>
+        </Switch>
+    </Router>
   );
 }
 
-export default App;
+const mapStateToProps = state => ({
+  loadingStatus: state.Login.loadingStatus,
+});
+
+export default connect(mapStateToProps)(App);
